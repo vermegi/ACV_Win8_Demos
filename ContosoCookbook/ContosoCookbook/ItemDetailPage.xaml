@@ -110,9 +110,6 @@
                                     <!-- Respect the narrower 100-pixel margin convention for portrait -->
                                     <VisualState x:Name="FullScreenPortrait">
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="richTextColumns" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="97,0,87,57"/>
-                                            </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image" Storyboard.TargetProperty="MaxHeight">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="400"/>
                                             </ObjectAnimationUsingKeyFrames>
@@ -122,14 +119,8 @@
                                     <!-- When snapped, the content is reformatted and scrolls vertically -->
                                     <VisualState x:Name="Snapped">
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="richTextColumns" Storyboard.TargetProperty="Margin">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="17,0,17,57"/>
-                                            </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="scrollViewer" Storyboard.TargetProperty="Style">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource VerticalScrollViewerStyle}"/>
-                                            </ObjectAnimationUsingKeyFrames>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="richTextBlock" Storyboard.TargetProperty="Width">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="280"/>
                                             </ObjectAnimationUsingKeyFrames>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="image" Storyboard.TargetProperty="MaxHeight">
                                                 <DiscreteObjectKeyFrame KeyTime="0" Value="160"/>
@@ -138,6 +129,48 @@
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
+                        </ScrollViewer>
+                    </UserControl>
+                </DataTemplate>
+            </FlipView.ItemTemplate>
+        </FlipView>
+
+        <!-- FlipView used in portrait mode -->
+        <FlipView
+            x:Name="portraitFlipView"
+            AutomationProperties.AutomationId="ItemsFlipView"
+            AutomationProperties.Name="Item Details"
+            Grid.Row="1"
+            Margin="0,-3,20,0"
+            ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
+            Visibility="Collapsed">
+
+            <FlipView.ItemTemplate>
+                <DataTemplate>
+                    <UserControl Loaded="StartLayoutUpdates" Unloaded="StopLayoutUpdates">
+                        <ScrollViewer x:Name="scrollViewer" Style="{StaticResource VerticalScrollViewerStyle}" Grid.Row="1">
+
+                            <!-- Vertical StackPanel for item-detail layout -->
+                            <StackPanel Orientation="Vertical" Margin="100,0,20,0">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock FontSize="26.667" FontWeight="Light" Text="{Binding Title}" TextWrapping="Wrap"/>
+                                    <Image x:Name="image" Width="400" Margin="0,20,0,40" Stretch="Uniform" Source="{Binding Image}" HorizontalAlignment="Left"/>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock FontSize="26.667" FontWeight="Light" Text="Ingredients" Margin="0,0,0,16"/>
+                                    <TextBlock FontSize="20" FontWeight="Light" LineHeight="32.5" Text="{Binding Ingredients, Converter={StaticResource ListConverter}}" TextWrapping="Wrap" />
+                                </StackPanel>
+
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock FontSize="26.667" FontWeight="Light" Text="Directions" Margin="0,24,0,16"/>
+                                    <ScrollViewer Style="{StaticResource VerticalScrollViewerStyle}">
+                                        <Grid>
+                                            <TextBlock FontSize="20" FontWeight="Light" Text="{Binding Directions}" TextWrapping="Wrap" />
+                                        </Grid>
+                                    </ScrollViewer>
+                                </StackPanel>
+                            </StackPanel>
                         </ScrollViewer>
                     </UserControl>
                 </DataTemplate>
@@ -166,6 +199,12 @@
                     <Storyboard>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="flipView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="portraitFlipView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
