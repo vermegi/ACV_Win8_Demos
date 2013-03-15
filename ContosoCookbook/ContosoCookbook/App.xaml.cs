@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using ContosoCookbook.Data;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -68,6 +69,7 @@ namespace ContosoCookbook
                         //Assume there is no state and continue
                     }
                 }
+                await RecipeDataSource.LoadLocalDataAsync();
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
