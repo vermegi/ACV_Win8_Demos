@@ -1,11 +1,14 @@
-﻿using ContosoCookbook.Data;
+﻿using ContosoCookbook.Common;
+using ContosoCookbook.Data;
 
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -51,6 +54,27 @@ namespace ContosoCookbook
             this.DefaultViewModel["Group"] = item.Group;
             this.DefaultViewModel["Items"] = item.Group.Items;
             this.flipView.SelectedItem = item;
+
+            DataTransferManager.GetForCurrentView().DataRequested += OnDataRequested;
+        }
+
+        private void OnDataRequested(DataTransferManager sender, DataRequestedEventArgs args)
+        {
+            var request = args.Request;
+            var item = (RecipeDataItem)this.flipView.SelectedItem;
+            request.Data.Properties.Title = item.Title;
+            request.Data.Properties.Description = "Recipe ingredients and directions";
+
+            // Share recipe text
+            var recipe = "\r\nINGREDIENTS\r\n";
+            recipe += String.Join("\r\n", item.Ingredients);
+            recipe += ("\r\n\r\nDIRECTIONS\r\n" + item.Directions);
+            request.Data.SetText(recipe);
+
+            // Share recipe image
+            var reference = RandomAccessStreamReference.CreateFromUri(new Uri(item.ImagePath.AbsoluteUri));
+            request.Data.Properties.Thumbnail = reference;
+            request.Data.SetBitmap(reference);
         }
 
         /// <summary>
@@ -63,6 +87,8 @@ namespace ContosoCookbook
         {
             var selectedItem = (RecipeDataItem)this.flipView.SelectedItem;
             pageState["SelectedItem"] = selectedItem.UniqueId;
+
+            DataTransferManager.GetForCurrentView().DataRequested -= OnDataRequested;
         }
     }
 }
