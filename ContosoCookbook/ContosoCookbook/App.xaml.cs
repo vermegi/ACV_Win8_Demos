@@ -1,4 +1,6 @@
-﻿using Callisto.Controls;
+﻿using System.Net.Http;
+using System.Threading.Tasks;
+using Callisto.Controls;
 using ContosoCookbook.Common;
 
 using System;
@@ -11,8 +13,13 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Networking.Connectivity;
+using Windows.Networking.PushNotifications;
+using Windows.Security.Cryptography;
 using Windows.UI;
 using Windows.UI.ApplicationSettings;
+using Windows.UI.Notifications;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -88,6 +95,8 @@ namespace ContosoCookbook
                 SearchPane.GetForCurrentView().SuggestionsRequested += OnSuggestionsRequested;
                 SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
 
+                await RegisterForPushNotifications();
+
                 // If the app was activated from a secondary tile, show the recipe
                 if (!String.IsNullOrEmpty(args.Arguments))
                 {
@@ -112,6 +121,41 @@ namespace ContosoCookbook
             }
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private static async Task RegisterForPushNotifications()
+        {
+            // Clear tiles and badges
+            TileUpdateManager.CreateTileUpdaterForApplication().Clear();
+            BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+
+            // Register for push notifications
+            var profile = NetworkInformation.GetInternetConnectionProfile();
+
+            if (profile.GetNetworkConnectivityLevel() == NetworkConnectivityLevel.InternetAccess)
+            {
+                var channel = await PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+                var buffer = CryptographicBuffer.ConvertStringToBinary(channel.Uri, BinaryStringEncoding.Utf8);
+                var uri = CryptographicBuffer.EncodeToBase64String(buffer);
+                var client = new HttpClient();
+
+                try
+                {
+                    var response =
+                        await client.GetAsync(new Uri("http://ContosoRecipes8.cloudapp.net?uri=" + uri + "&type=tile"));
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var dialog = new MessageDialog("Unable to open push notification channel");
+                        dialog.ShowAsync();
+                    }
+                }
+                catch (HttpRequestException)
+                {
+                    var dialog = new MessageDialog("Unable to open push notification channel");
+                    dialog.ShowAsync();
+                }
+            }
         }
 
         private void OnCommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)

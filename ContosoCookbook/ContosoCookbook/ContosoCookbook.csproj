@@ -12,7 +12,8 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>ContosoCookbook_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>Contoso.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>BD50B90554C65B04ECC2152DAC8346276A9E6BD8</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -136,6 +137,7 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="Common\ReadMe.txt" />
+    <None Include="Contoso.pfx" />
     <None Include="ContosoCookbook_TemporaryKey.pfx" />
     <None Include="packages.config" />
   </ItemGroup>
