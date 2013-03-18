@@ -1,4 +1,5 @@
-﻿using ContosoCookbook.Common;
+﻿using Callisto.Controls;
+using ContosoCookbook.Common;
 
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -27,6 +30,8 @@ namespace ContosoCookbook
     /// </summary>
     sealed partial class App : Application
     {
+        private Color _background = Color.FromArgb(255, 0, 77, 96);
+
         /// <summary>
         /// Initializes the singleton Application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -73,6 +78,7 @@ namespace ContosoCookbook
                 await RecipeDataSource.LoadLocalDataAsync();
 
                 SearchPane.GetForCurrentView().SuggestionsRequested += OnSuggestionsRequested;
+                SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
@@ -89,6 +95,35 @@ namespace ContosoCookbook
             }
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private void OnCommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            // Add an About command
+            var about = new SettingsCommand("about", "About", (handler) =>
+            {
+                var settings = new SettingsFlyout();
+                settings.Content = new AboutUserControl();
+                settings.HeaderBrush = new SolidColorBrush(_background);
+                settings.Background = new SolidColorBrush(_background);
+                settings.HeaderText = "About";
+                settings.IsOpen = true;
+            });
+
+            args.Request.ApplicationCommands.Add(about);
+
+            // Add a Preferences command
+            var preferences = new SettingsCommand("preferences", "Preferences", (handler) =>
+            {
+                var settings = new SettingsFlyout();
+                settings.Content = new PreferencesUserControl();
+                settings.HeaderBrush = new SolidColorBrush(_background);
+                settings.Background = new SolidColorBrush(_background);
+                settings.HeaderText = "Preferences";
+                settings.IsOpen = true;
+            });
+
+            args.Request.ApplicationCommands.Add(preferences);
         }
 
         private void OnSuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs args)
@@ -132,6 +167,7 @@ namespace ContosoCookbook
 
                 // Register handler for SuggestionsRequested events from the search pane
                 SearchPane.GetForCurrentView().SuggestionsRequested += OnSuggestionsRequested;
+                SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
             }
 
             // TODO: Register the Windows.ApplicationModel.Search.SearchPane.GetForCurrentView().QuerySubmitted

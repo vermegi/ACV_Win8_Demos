@@ -1,4 +1,5 @@
-﻿using ContosoCookbook.Common;
+﻿using Callisto.Controls;
+using ContosoCookbook.Common;
 using ContosoCookbook.Data;
 
 using System;
@@ -89,6 +90,37 @@ namespace ContosoCookbook
             pageState["SelectedItem"] = selectedItem.UniqueId;
 
             DataTransferManager.GetForCurrentView().DataRequested -= OnDataRequested;
+        }
+
+        private void OnBragButtonClicked(object sender, RoutedEventArgs e)
+        {
+            // Create a menu containing two items
+            var menu = new Menu();
+            var item1 = new MenuItem { Text = "Photo" };
+            item1.Tapped += OnCapturePhoto;
+            menu.Items.Add(item1);
+            var item2 = new MenuItem { Text = "Video" };
+            item2.Tapped += OnCaptureVideo;
+            menu.Items.Add(item2);
+
+            // Show the menu in a Flyout anchored to the Brag button
+            var flyout = new Flyout();
+            flyout.Placement = PlacementMode.Top;
+            flyout.HorizontalAlignment = HorizontalAlignment.Left;
+            flyout.HorizontalContentAlignment = HorizontalAlignment.Left;
+            flyout.PlacementTarget = BragButton;
+            flyout.Content = menu;
+            flyout.IsOpen = true;
+        }
+
+        private void OnCapturePhoto(object sender, TappedRoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
+        }
+
+        private void OnCaptureVideo(object sender, TappedRoutedEventArgs e)
+        {
+            DataTransferManager.ShowShareUI();
         }
     }
 }
