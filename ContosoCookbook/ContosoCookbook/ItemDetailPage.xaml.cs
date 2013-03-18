@@ -10,6 +10,8 @@ using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage.Streams;
+using Windows.UI.Notifications;
+using Windows.UI.Popups;
 using Windows.UI.StartScreen;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -139,6 +141,29 @@ namespace ContosoCookbook
                 );
 
             await tile.RequestCreateAsync();
+        }
+
+        private async void OnReminderButtonClicked(object sender, RoutedEventArgs e)
+        {
+            var notifier = ToastNotificationManager.CreateToastNotifier();
+
+            // Make sure notifications are enabled
+            if (notifier.Setting != NotificationSetting.Enabled)
+            {
+                var dialog = new MessageDialog("Notifications are currently disabled");
+                await dialog.ShowAsync();
+                return;
+            }
+
+            // Get a toast template and insert a text node containing a message
+            var template = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
+            var element = template.GetElementsByTagName("text")[0];
+            element.AppendChild(template.CreateTextNode("Reminder!"));
+
+            // Schedule the toast to appear 30 seconds from now
+            var date = DateTimeOffset.Now.AddSeconds(30);
+            var stn = new ScheduledToastNotification(template, date);
+            notifier.AddToSchedule(stn);
         }
     }
 }
