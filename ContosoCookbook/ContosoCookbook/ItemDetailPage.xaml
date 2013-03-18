@@ -33,6 +33,7 @@
                 </Grid.ColumnDefinitions>
                 <StackPanel x:Name="LeftCommands" Orientation="Horizontal" Grid.Column="0" HorizontalAlignment="Left">
                     <Button x:Name="BragButton" HorizontalAlignment="Left" Style="{StaticResource BragAppBarButtonStyle}" Click="OnBragButtonClicked" />
+                    <Button x:Name="PinRecipeButton" HorizontalAlignment="Left" Style="{StaticResource PinAppBarButtonStyle}" Click="OnPinRecipeButtonClicked" />
                 </StackPanel>
                 <StackPanel x:Name="RightCommands" Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Right">
                 </StackPanel>

@@ -54,7 +54,15 @@ namespace ContosoCookbook
 
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
-            
+
+            if (args.PreviousExecutionState == ApplicationExecutionState.Running)
+            {
+                if (!String.IsNullOrEmpty(args.Arguments))
+                    ((Frame)Window.Current.Content).Navigate(typeof(ItemDetailPage), args.Arguments);
+                Window.Current.Activate();
+                return;
+            }
+
             if (rootFrame == null)
             {
                 // Create a Frame to act as the navigation context and navigate to the first page
@@ -79,6 +87,15 @@ namespace ContosoCookbook
 
                 SearchPane.GetForCurrentView().SuggestionsRequested += OnSuggestionsRequested;
                 SettingsPane.GetForCurrentView().CommandsRequested += OnCommandsRequested;
+
+                // If the app was activated from a secondary tile, show the recipe
+                if (!String.IsNullOrEmpty(args.Arguments))
+                {
+                    rootFrame.Navigate(typeof(ItemDetailPage), args.Arguments);
+                    Window.Current.Content = rootFrame;
+                    Window.Current.Activate();
+                    return;
+                }
 
                 // Place the frame in the current Window
                 Window.Current.Content = rootFrame;
